@@ -1,5 +1,7 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_web_animation/models/infos/infos.dart';
 import 'package:food_web_animation/res/components/info_card/info_card.dart';
+import 'package:food_web_animation/res/components/scroll_offset/scroll_offset.dart';
 import 'package:food_web_animation/res/components/text_reveal.dart';
 import 'package:food_web_animation/view.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,7 +14,8 @@ class ThirdSection extends StatefulWidget {
   State<ThirdSection> createState() => _ThirdSectionState();
 }
 
-class _ThirdSectionState extends State<ThirdSection> with SingleTickerProviderStateMixin {
+class _ThirdSectionState extends State<ThirdSection>
+    with SingleTickerProviderStateMixin {
 
   late AnimationController controller;
 
@@ -20,14 +23,11 @@ class _ThirdSectionState extends State<ThirdSection> with SingleTickerProviderSt
   void initState() {
     controller = AnimationController(
         vsync: this,
-      duration: Duration(milliseconds: 1000),
-      reverseDuration: Duration(milliseconds: 375)
+        duration: Duration(milliseconds: 1000),
+        reverseDuration: Duration(milliseconds: 375)
     );
 
-    Future.delayed(Duration(milliseconds: 1000) , () {
-      controller.forward();
-    });
-    
+
     super.initState();
   }
 
@@ -39,8 +39,32 @@ class _ThirdSectionState extends State<ThirdSection> with SingleTickerProviderSt
       child: Column(
         children: [
           SizedBox(height: 50.0,),
-          
-          TextReveal(maxHeight: 55.0, controller: controller, child: Text("How It Works",style: GoogleFonts.quicksand(fontSize: 45.0,fontWeight: FontWeight.w700),)),
+
+          BlocBuilder<DisplayOffset, ScrollOffset>(
+            buildWhen: (previous, current) {
+              if ((current.scrollOffsetValue >= 1900 &&
+                  current.scrollOffsetValue <= 2300) ||
+                  controller.isAnimating) {
+                return true;
+              } else {
+                return false;
+              }
+            },
+
+            builder: (context, state) {
+
+              if(state.scrollOffsetValue >= 2100){
+                controller.forward();
+              }else{
+                controller.reverse();
+              }
+
+              return TextReveal(maxHeight: 55.0,
+                  controller: controller,
+                  child: Text("How It Works", style: GoogleFonts.quicksand(
+                      fontSize: 45.0, fontWeight: FontWeight.w700),));
+            },
+          ),
 
           const SizedBox(height: 40.0,),
 
@@ -50,7 +74,6 @@ class _ThirdSectionState extends State<ThirdSection> with SingleTickerProviderSt
           ),
 
           const SizedBox(height: 50.0,),
-
 
 
         ],
